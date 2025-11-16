@@ -1,3 +1,4 @@
+
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -17,8 +18,8 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "સંદેશ મોકલવામાં આવ્યો!",
-      description: "સંપર્ક કરવા બદલ આભાર. અમે ટૂંક સમયમાં તમારો સંપર્ક કરીશું.",
+      title: "Message Sent!",
+      description: "Thank you for reaching out. We'll get back to you soon.",
     });
     setFormData({ name: "", email: "", phone: "", message: "" });
   };
@@ -39,14 +40,14 @@ const Contact = () => {
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-up">
           <div className="inline-block px-6 py-2 bg-primary/10 backdrop-blur-sm rounded-full border border-primary/20 mb-4">
-            <span className="text-primary text-sm font-semibold tracking-wider">સંપર્ક કરો</span>
+            <span className="text-primary text-sm font-semibold tracking-wider">GET IN TOUCH</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-primary mb-4">
-            ચાલો કંઈક અદ્ભુત બનાવીએ
+            Let's Create Something Amazing
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            તમારી કલ્પનાને સાકાર કરવા તૈયાર છો? આજે જ અમારો સંપર્ક કરો
+            Ready to bring your vision to life? Get in touch with us today
           </p>
         </div>
 
@@ -56,7 +57,7 @@ const Contact = () => {
             <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/20 rounded-2xl p-8 hover:border-accent/40 transition-all duration-300">
               <h3 className="text-3xl font-serif font-bold text-primary mb-8 flex items-center gap-3">
                 <div className="w-2 h-8 bg-accent rounded-full" />
-                સંપર્ક માહિતી
+                Contact Information
               </h3>
               
               <div className="space-y-6">
@@ -65,7 +66,7 @@ const Contact = () => {
                     <Phone className="w-7 h-7 text-background" />
                   </div>
                   <div>
-                    <p className="font-semibold text-primary mb-2 text-lg">ફોન નંબર</p>
+                    <p className="font-semibold text-primary mb-2 text-lg">Phone Number</p>
                     <a href="tel:+919825540996" className="text-muted-foreground hover:text-accent transition-colors text-lg">
                       +91 9825540996
                     </a>
@@ -79,7 +80,7 @@ const Contact = () => {
                     <Mail className="w-7 h-7 text-background" />
                   </div>
                   <div>
-                    <p className="font-semibold text-primary mb-2 text-lg">ઈમેલ</p>
+                    <p className="font-semibold text-primary mb-2 text-lg">Email Address</p>
                     <a href="mailto:info@prasangcaterers.com" className="text-muted-foreground hover:text-accent transition-colors text-lg break-all">
                       info@prasangcaterers.com
                     </a>
@@ -93,9 +94,9 @@ const Contact = () => {
                     <MapPin className="w-7 h-7 text-background" />
                   </div>
                   <div>
-                    <p className="font-semibold text-primary mb-2 text-lg">સ્થાન</p>
+                    <p className="font-semibold text-primary mb-2 text-lg">Location</p>
                     <p className="text-muted-foreground text-lg">
-                      સુરત, ગુજરાત
+                      Surat, Gujarat, India
                     </p>
                   </div>
                 </div>
@@ -104,7 +105,7 @@ const Contact = () => {
               {/* Decorative Element */}
               <div className="mt-8 pt-8 border-t-2 border-accent/20">
                 <p className="text-accent font-serif text-center text-lg italic">
-                  "તમારી દરેક ઉજવણી માટે અમારી સેવા"
+                  "Excellence in Every Celebration"
                 </p>
               </div>
             </div>
@@ -115,15 +116,15 @@ const Contact = () => {
             <div className="bg-card/50 backdrop-blur-sm border-2 border-primary/20 rounded-2xl p-8 hover:border-accent/40 transition-all duration-300">
               <h3 className="text-3xl font-serif font-bold text-primary mb-8 flex items-center gap-3">
                 <div className="w-2 h-8 bg-accent rounded-full" />
-                સંદેશ મોકલો
+                Send Us a Message
               </h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="group">
-                  <label className="block text-sm font-medium text-primary mb-2">તમારું નામ *</label>
+                  <label className="block text-sm font-medium text-primary mb-2">Your Name *</label>
                   <Input
                     name="name"
-                    placeholder="નામ દાખલ કરો"
+                    placeholder="Enter your name"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -132,7 +133,7 @@ const Contact = () => {
                 </div>
 
                 <div className="group">
-                  <label className="block text-sm font-medium text-primary mb-2">ઈમેલ એડ્રેસ *</label>
+                  <label className="block text-sm font-medium text-primary mb-2">Email Address *</label>
                   <Input
                     name="email"
                     type="email"
@@ -145,7 +146,7 @@ const Contact = () => {
                 </div>
 
                 <div className="group">
-                  <label className="block text-sm font-medium text-primary mb-2">ફોન નંબર</label>
+                  <label className="block text-sm font-medium text-primary mb-2">Phone Number</label>
                   <Input
                     name="phone"
                     type="tel"
@@ -157,10 +158,10 @@ const Contact = () => {
                 </div>
 
                 <div className="group">
-                  <label className="block text-sm font-medium text-primary mb-2">તમારો સંદેશ *</label>
+                  <label className="block text-sm font-medium text-primary mb-2">Your Message *</label>
                   <Textarea
                     name="message"
-                    placeholder="અમને તમારા ઇવેન્ટ વિશે જણાવો..."
+                    placeholder="Tell us about your event..."
                     value={formData.message}
                     onChange={handleChange}
                     required
@@ -174,7 +175,7 @@ const Contact = () => {
                   size="lg" 
                   className="w-full group text-lg"
                 >
-                  સંદેશ મોકલો
+                  Send Message
                   <Send className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </form>
@@ -186,7 +187,7 @@ const Contact = () => {
         <div className="text-center mt-16 animate-fade-up">
           <div className="inline-flex items-center gap-4">
             <div className="w-16 h-1 bg-gradient-to-r from-transparent to-accent rounded-full" />
-            <span className="text-accent font-serif text-xl">અમે તમારી સાથે જોડાવવા આતુર છીએ</span>
+            <span className="text-accent font-serif text-xl">We're Excited to Connect With You</span>
             <div className="w-16 h-1 bg-gradient-to-l from-transparent to-accent rounded-full" />
           </div>
         </div>
