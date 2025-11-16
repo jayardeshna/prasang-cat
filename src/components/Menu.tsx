@@ -5,8 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, ChevronDown, ChevronUp } from "lucide-react";
+import { ShoppingCart, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import emailjs from '@emailjs/browser';
 
 // Menu Item interface
 export interface MenuItem {
@@ -56,13 +57,19 @@ const menuItems: MenuItem[] = [
   { id: "dessert-2", name: "રસગુલ્લા (Rasgulla)", description: "તાજા રસગુલ્લા", category: "Desserts" },
   { id: "dessert-3", name: "જલેબી (Jalebi)", description: "તળેલી જલેબી", category: "Desserts" },
   { id: "dessert-4", name: "ખીર (Kheer)", description: "ચોખાની ખીર", category: "Desserts" },
-  { id: "dessert-5", name: "શ્રીખંડ (Shrikhand)", description: "કેસર શ્રીખંડ", category: "Desserts" },
 
   // Beverages
-  { id: "bev-1", name: "છાશ (Chaas)", description: "મસાલેદાર છાશ", category: "Beverages" },
   { id: "bev-2", name: "લસ્સી (Lassi)", description: "મીઠી લસ્સી", category: "Beverages" },
-  { id: "bev-3", name: "ચા (Chai)", description: "ગરમ મસાલા ચા", category: "Beverages" },
-  { id: "bev-4", name: "કોફી (Coffee)", description: "ફિલ્ટર કોફી", category: "Beverages" },
+  { id: "bev-5", name: "કેરીનો રસ (Keri No Ras)", description: "તાજો કેરીનો રસ", category: "Beverages" },
+  { id: "bev-6", name: "લિક્વિડ મઠો (Liquid Matho)", description: "મીઠું દહીં, પીવાની સ્ટાઇલ", category: "Beverages" },
+  { id: "bev-7", name: "શ્રીખંડ (Shrikhand Drink Style)", description: "થોડું પાતળું પીવાની સ્ટાઇલ શ્રીખંડ", category: "Beverages" },
+  { id: "bev-8", name: "રબડી (Rabdi)", description: "ઘાડી મીઠી રબડી", category: "Beverages" },
+  { id: "bev-9", name: "બાસુંદી (Basundi)", description: "મીઠી, ઘાડી દૂધની બાસુંદી", category: "Beverages" },
+  { id: "bev-10", name: "મીઠો મઠો (Sweet Matho)", description: "દહીં + શક્કરની મીઠી પીણું", category: "Beverages" },
+  { id: "bev-11", name: "છાસ સ્પેશ્યલ (Masala Buttermilk)", description: "મસાલેદાર છાશ", category: "Beverages" },
+  { id: "bev-12", name: "મીઠું લસી (Sweet Lassi)", description: "પંજાબી સ્ટાઇલ મીઠી લસી", category: "Beverages" },
+  { id: "bev-13", name: "કેરી લસી (Mango Lassi)", description: "કેરી અને દહીંનું પેય", category: "Beverages" },
+  { id: "bev-14", name: "ફ્રૂટ મિલ્કશેક (Fruit Milkshake)", description: "કેરી/ચીકૂ/બનાના ઓપ્શન", category: "Beverages" },
 ];
 
 // Get unique categories
@@ -72,6 +79,7 @@ const Menu = () => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(categories));
   const [isRFQDialogOpen, setIsRFQDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -113,7 +121,7 @@ const Menu = () => {
     setIsRFQDialogOpen(true);
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     if (!formData.name || !formData.phone || !formData.eventDate || !formData.guestCount) {
       toast({
         title: "Please fill all required fields",
@@ -123,28 +131,71 @@ const Menu = () => {
       return;
     }
     
+    setIsSubmitting(true);
+    
     const selectedItemsData = menuItems.filter((item) => selectedItems.has(item.id));
 
-    const rfqPayload = {
-      ...formData,
-      items: selectedItemsData.map((item) => ({
-        id: item.id,
-        name: item.name,
-        category: item.category,
-      })),
-      selectedCount: selectedItems.size,
-    };
+    // Group items by category for email
+    const itemsByCategory = selectedItemsData.reduce((acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item.name);
+      return acc;
+    }, {} as Record<string, string[]>);
 
-    console.log("RFQ Payload:", rfqPayload);
-
-    toast({
-      title: "Quotation request sent!",
-      description: "We will contact you shortly.",
+    // Format items list for email
+    let itemsList = '';
+    Object.entries(itemsByCategory).forEach(([category, items]) => {
+      itemsList += `\n${category}:\n`;
+      items.forEach(item => {
+        itemsList += `  • ${item}\n`;
+      });
     });
 
-    setFormData({ name: "", phone: "", eventDate: "", guestCount: "", message: "" });
-    setSelectedItems(new Set());
-    setIsRFQDialogOpen(false);
+    const emailParams = {
+      to_email: 'jayardeshna.1011@gmail.com',
+      customer_name: formData.name,
+      customer_phone: formData.phone,
+      event_date: formData.eventDate,
+      guest_count: formData.guestCount,
+      customer_message: formData.message || 'No additional message',
+      selected_items: itemsList,
+      total_items: selectedItems.size,
+      submission_date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    };
+
+    try {
+      // EmailJS Configuration
+      const EMAILJS_SERVICE_ID = 'service_ayqn1hj';
+      const EMAILJS_TEMPLATE_ID = 'template_2wl83ff';
+      const EMAILJS_PUBLIC_KEY = 'GMybU3v5Z0pIM1qxp';
+
+      const result = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        emailParams,
+        EMAILJS_PUBLIC_KEY
+      );
+
+      console.log('Email sent successfully:', result);
+
+      toast({
+        title: "Quotation request sent!",
+        description: "We will contact you shortly.",
+      });
+
+      setFormData({ name: "", phone: "", eventDate: "", guestCount: "", message: "" });
+      setSelectedItems(new Set());
+      setIsRFQDialogOpen(false);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      toast({
+        title: "Failed to send request",
+        description: "Please try again or contact us directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -182,31 +233,33 @@ const Menu = () => {
           </p>
         </div>
 
-        {/* Selected Items Summary - Sticky Bar */}
+        {/* Selected Items Summary - Bottom Fixed Bar */}
         {selectedItems.size > 0 && (
-          <div className="sticky top-24 z-40 mb-8 bg-card/95 backdrop-blur-sm border-2 border-accent/30 rounded-2xl p-4 shadow-lg animate-fade-up">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <ShoppingCart className="w-6 h-6 text-accent" />
-                <span className="text-lg font-semibold text-primary">
-                  {selectedItems.size} આઇટમ્સ પસંદ કરેલી
-                </span>
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t-2 border-accent/30 p-4 shadow-lg">
+            <div className="container mx-auto px-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <ShoppingCart className="w-6 h-6 text-accent" />
+                  <span className="text-lg font-semibold text-primary">
+                    {selectedItems.size} આઇટમ્સ પસંદ કરેલી
+                  </span>
+                </div>
+                <Button
+                  variant="default"
+                  size="lg"
+                  onClick={handleRequestQuotation}
+                  className="w-full sm:w-auto bg-accent hover:bg-accent/90"
+                >
+                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  કોટેશન માટે વિનંતી કરો
+                </Button>
               </div>
-              <Button
-                variant="default"
-                size="lg"
-                onClick={handleRequestQuotation}
-                className="w-full sm:w-auto bg-accent hover:bg-accent/90"
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                કોટેશન માટે વિનંતી કરો
-              </Button>
             </div>
           </div>
         )}
 
         {/* Menu Categories */}
-        <div className="space-y-6">
+        <div className="space-y-6 pb-24">
           {categories.map((category, index) => {
             const categoryItems = menuItems.filter(item => item.category === category);
             const isExpanded = expandedCategories.has(category);
@@ -419,14 +472,23 @@ const Menu = () => {
                   variant="outline"
                   onClick={() => setIsRFQDialogOpen(false)}
                   className="w-full sm:w-auto"
+                  disabled={isSubmitting}
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleFormSubmit}
                   className="w-full sm:w-auto bg-accent hover:bg-accent/90"
+                  disabled={isSubmitting}
                 >
-                  Submit Quote Request
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Submit Quote Request'
+                  )}
                 </Button>
               </DialogFooter>
             </div>
