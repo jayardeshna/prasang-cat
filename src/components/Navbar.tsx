@@ -1,16 +1,45 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import prasangLogo from "@/assets/prasang_logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+    // If we're on the home page, scroll to section
+    if (location.pathname === "/") {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+        setIsOpen(false);
+      }
+    } else {
+      // If we're on a different page, navigate to home and then scroll
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
       setIsOpen(false);
+    }
+  };
+
+  const handleMenuClick = () => {
+    navigate("/menu");
+    setIsOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    if (location.pathname === "/") {
+      scrollToSection("home");
+    } else {
+      navigate("/");
     }
   };
 
@@ -19,7 +48,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <button
-            onClick={() => scrollToSection("home")}
+            onClick={handleLogoClick}
             className="flex items-center gap-3 hover:opacity-80 transition-opacity duration-300"
           >
             <img 
@@ -47,7 +76,7 @@ const Navbar = () => {
               Services
             </button>
             <button
-              onClick={() => scrollToSection("menu")}
+              onClick={handleMenuClick}
               className="text-foreground hover:text-accent transition-colors"
             >
               Menu
@@ -104,7 +133,7 @@ const Navbar = () => {
                 Services
               </button>
               <button
-                onClick={() => scrollToSection("menu")}
+                onClick={handleMenuClick}
                 className="text-foreground hover:text-accent transition-colors text-left"
               >
                 Menu

@@ -171,14 +171,14 @@ const Menu = () => {
         {/* Section Header */}
         <div className="text-center mb-12 animate-fade-up">
           <div className="inline-block px-6 py-2 bg-primary/10 backdrop-blur-sm rounded-full border border-primary/20 mb-4">
-            <span className="text-primary text-sm font-semibold tracking-wider">અમારું મેનુ</span>
+            <span className="text-primary text-sm font-semibold tracking-wider">Our Items</span>
           </div>
           <h2 className="text-4xl md:text-6xl font-serif font-bold text-primary mb-4">
-            તમારું પોતાનું મેનુ બનાવો
+            Design Your Meal
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            દરેક કેટેગરીમાંથી તમારી પસંદગીની આઇટમ્સ પસંદ કરો
+           Choose your desired dishes from all categories.
           </p>
         </div>
 
